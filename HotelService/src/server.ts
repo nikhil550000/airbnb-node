@@ -6,7 +6,7 @@ import { appErrorHandler, genericErrorHandler } from './middlewares/error.middle
 import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
 import sequelize from './db/models/sequelize';
-import Hotel from './db/models/hotel';
+// import Hotel from './db/models/hotel';
 const app = express();
 
 app.use(express.json());
@@ -43,8 +43,8 @@ app.listen(serverConfig.PORT, async () => {
         //     rating: 4.5,
         //     ratingCount: 100
         // });
-        const hotel = await Hotel.findAll();
-        logger.info("Hotel created successfully", hotel);
+        // const hotel = await Hotel.findAll();
+        // logger.info("Hotel created successfully", hotel);
 
     } catch (error) {
         logger.error("Database connection failed", error);

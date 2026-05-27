@@ -16,13 +16,12 @@ export async function createHotel(hotelData: createHotelDTO) {
 export async function getHotelById(id: number) {
     try {
         const hotel = await Hotel.findByPk(id);
-        if (!hotel) {
-            throw new Error("Hotel not found");
+        if (hotel) {
+            logger.info("Hotel fetched successfully", hotel.id);
         }
-        logger.info("Hotel fetched successfully", hotel.id);
         return hotel;
     } catch (error) {
-        throw error;
+        throw (error);
     }
 }
 

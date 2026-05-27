@@ -4,7 +4,9 @@ import { createHotelService, getHotelByIdService } from "../services/hotel.servi
 
 export async function createHotelHandler(req: Request, res: Response, next: NextFunction) {
     try {
+        //call the service layer
         const hotel = await createHotelService(req.body);
+        //send the response
         res.status(201).json(hotel);
     } catch (error) {
         next(error);

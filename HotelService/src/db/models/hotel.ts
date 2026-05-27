@@ -8,8 +8,8 @@ class Hotel extends Model<InferAttributes<Hotel>, InferCreationAttributes<Hotel>
     declare location: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
-    declare rating: number;
-    declare ratingCount: number;
+    declare rating?: number;
+    declare ratingCount?: number;
 
 
 }
@@ -44,11 +44,13 @@ Hotel.init({
     },
     rating: {
         type: DataTypes.DECIMAL(3, 2),
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     ratingCount: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     }
 }, {
     tableName: "hotels",
