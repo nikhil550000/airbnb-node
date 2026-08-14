@@ -1,6 +1,7 @@
-import { Prisma } from "../prisma/generated/client";
+import { Prisma, IdempotencyKey } from "../prisma/generated/client";
 import prismaClient from "../prisma/client";
-
+import { validate as isValidUUid } from "uuid";
+import { BadRequestError, NotFoundError } from "../utils/errors/app.error"
 
 export async function createBooking(bookingInput: Prisma.BookingCreateInput) {
 
@@ -27,15 +28,21 @@ export async function createIdempotencyKey(key: string, bookingId: number) {
     return idempotencykey;
 }
 
-export async function getIdempotencyKey(key: string) {
+export async function getIdempotencyKeywithLock(tx: Prisma.TransactionClient, key: string) {
+    if (!isValidUUid(key)) {
+        throw new BadRequestError("Invalid Idempotency Key");
+    }
 
-    const idempotencykey = await prismaClient.idempotencyKey.findUnique({
-        where: {
-            idemkey: key
-        }
-    });
+    const idempotencyKey: Array<IdempotencyKey> = await tx.$queryRaw(
+        Prisma.raw(`SELECT * FROM "IdempotencyKey"  WHERE "idemkey" = ${key} FOR UPDATE;`)
+    )
 
-    return idempotencykey;
+    if (!idempotencyKey || idempotencyKey.length == 0) {
+        throw new NotFoundError("Idempotency key not found");
+    }
+
+    return idempotencyKey[0];
+
 
 }
 
@@ -49,8 +56,8 @@ export async function getBookingbyId(bookingId: number) {
     return booking;
 }
 
-export async function confirmBooking(bookingId: number) {
-    const booking = await prismaClient.booking.update({
+export async function confirmBooking(tx: Prisma.TransactionClient, bookingId: number) {
+    const booking = await tx.booking.update({
         where: {
             id: bookingId
         },
@@ -75,9 +82,9 @@ export async function cancelBooking(bookingId: number) {
     return booking;
 }
 
-export async function finalizeIdempotencyKey(key: string) {
+export async function finalizeIdempotencyKey(tx: Prisma.TransactionClient, key: string) {
 
-    const idempotencyKey = await prismaClient.idempotencyKey.update({
+    const idempotencyKey = await tx.idempotencyKey.update({
 
         where: {
             idemkey: key
