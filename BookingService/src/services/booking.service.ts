@@ -27,7 +27,7 @@ export async function createBookingService(createBookingDTO: createBookingDTO) {
 
 }
 
-export async function confirmBookingService(tx: Prisma.TransactionClient, idempotencyKey: string) {
+export async function confirmBookingService(idempotencyKey: string) {
     return await prismaClient.$transaction(async (tx) => {
         const idempotencyKeydata = await getIdempotencyKeywithLock(tx, idempotencyKey);
 
