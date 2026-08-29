@@ -6,6 +6,7 @@ import { appErrorHandler, genericErrorHandler } from './middlewares/error.middle
 import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
 import { setupMailerWorker } from './processors/email.processor';
+import { addEmailToQueue } from './producers/email.producer';
 // import { NotificationDto } from './dto/notification.dto';
 // import { addEmailToQueue } from './producers/email.producer';
 
@@ -32,11 +33,22 @@ app.use(appErrorHandler);
 app.use(genericErrorHandler);
 
 
-app.listen(serverConfig.PORT, () => {
+app.listen(serverConfig.PORT, async () => {
     logger.info(`Server is running on http://localhost:${serverConfig.PORT}`);
     logger.info(`Press Ctrl+C to stop the server.`);
     setupMailerWorker();
     logger.info(`Mailer worker setup completed`);
+
+
+    addEmailToQueue({
+        to:"nikhilsaig07@gmail.com",
+        subject:"Test Email",
+        templateId: "welcome",
+        params:{
+            name : "Nikhil",
+            appName:"Booking App"
+        }
+    });
 
     // const sampleNotification:NotificationDto = {
     //     to:"sample",
