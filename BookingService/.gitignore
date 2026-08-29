@@ -3,4 +3,4 @@ dist/
 .env
 logs/
 src/prisma/generated/
-
+test.csv
